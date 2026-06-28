@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ data.user.login }} — GitPulse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #21262d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --font: 'Inter', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .topbar {
+      max-width: 900px;
+      margin: 0 auto 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .logo:hover { text-decoration: none; opacity: 0.8; }
+
+    .logo-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    .search-inline {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .search-inline input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      outline: none;
+      width: 180px;
+      transition: border-color 0.15s;
+    }
+
+    .search-inline input:focus { border-color: var(--accent); }
+    .search-inline input::placeholder { color: var(--muted); }
+
+    .search-inline button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-family: var(--font);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.5rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .search-inline button:hover { border-color: var(--accent); }
+
+    .container { max-width: 900px; margin: 0 auto; }
+
+    /* Profile header */
+    .profile {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .profile-info h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .profile-info .handle {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .profile-info .bio {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+      max-width: 50ch;
+    }
+
+    .profile-meta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .profile-meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.1rem 1.2rem;
+    }
+
+    .stat-card .label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-card .value {
+      font-family: var(--mono);
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-card .sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+    }
+
+    /* Two-column layout */
+    .cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 620px) { .cols { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+    }
+
+    .card-title {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    /* Day chart */
+    .day-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 60px;
+    }
+
+    .day-bar-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .day-bar {
+      width: 100%;
+      background: var(--accent-dim, #1f3a5f);
+      border-radius: 3px 3px 0 0;
+      min-height: 3px;
+      transition: background 0.2s;
+    }
+
+    .day-bar.active { background: var(--accent); }
+
+    .day-label {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--muted);
+    }
+
+    /* Repo list */
+    .repo-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .repo-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .repo-name {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--accent);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .repo-badge {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.45rem;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    /* Commit feed */
+    .commit-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .commit-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: start;
+      gap: 0.6rem;
+    }
+
+    .commit-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      margin-top: 0.35rem;
+      flex-shrink: 0;
+    }
+
+    .commit-msg {
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .commit-meta {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    /* Most active day */
+    .active-day-value {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--green);
+      margin-bottom: 0.25rem;
+    }
+
+    .generated {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      text-align: right;
+      margin-top: 1.5rem;
+    }
+
+    .api-link {
+      margin-top: 0.5rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      text-align: right;
+    }
+
+    .api-link a { color: var(--muted); }
+    .api-link a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="logo" href="/">
+    <span class="logo-dot"></span>
+    GitPulse
+  </a>
+  <form class="search-inline" method="POST" action="/">
+    <input type="text" name="username" placeholder="another username" autocomplete="off" spellcheck="false" />
+    <button type="submit">Analyze →</button>
+  </form>
+</div>
+
+<div class="container">
+
+  <!-- Profile -->
+  <div class="profile">
+    <img class="avatar" src="{{ data.user.avatar_url }}" alt="{{ data.user.login }}" />
+    <div class="profile-info">
+      <h2>{{ data.user.name }}</h2>
+      <div class="handle">@{{ data.user.login }} · joined {{ data.user.created_at[:4] }}</div>
+      {% if data.user.bio %}<div class="bio">{{ data.user.bio }}</div>{% endif %}
+      <div class="profile-meta">
+        {% if data.user.location %}<span>📍 {{ data.user.location }}</span>{% endif %}
+        <span>👥 {{ data.user.followers }} followers · {{ data.user.following }} following</span>
+        <span><a href="{{ data.user.html_url }}" target="_blank">View on GitHub ↗</a></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="label">Commits (recent)</div>
+      <div class="value">{{ data.activity.commit_count }}</div>
+      <div class="sub">from public events</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Pull Requests</div>
+      <div class="value">{{ data.activity.pr_count }}</div>
+      <div class="sub">recent activity</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Issues</div>
+      <div class="value">{{ data.activity.issue_count }}</div>
+      <div class="sub">opened or commented</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Public Repos</div>
+      <div class="value">{{ data.user.public_repos }}</div>
+      <div class="sub">total on profile</div>
+    </div>
+  </div>
+
+  <!-- Day chart + most active day -->
+  <div class="cols">
+    <div class="card">
+      <div class="card-title">Activity by day of week</div>
+      {% set max_day = data.activity.day_chart.values()|max %}
+      <div class="day-chart">
+        {% for day, count in data.activity.day_chart.items() %}
+        {% set height = (count / max_day * 56)|int if max_day > 0 else 3 %}
+        <div class="day-bar-wrap">
+          <div
+            class="day-bar {% if day == data.activity.most_active_day %}active{% endif %}"
+            style="height: {{ height }}px;"
+            title="{{ day }}: {{ count }} events"
+          ></div>
+          <span class="day-label">{{ day[:2] }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Most active day</div>
+      <div class="active-day-value">{{ data.activity.most_active_day }}</div>
+      <div style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">
+        Based on {{ data.activity.commit_count + data.activity.pr_count + data.activity.issue_count }} total events in recent history.
+      </div>
+    </div>
+  </div>
+
+  <!-- Top repos -->
+  <div class="cols">
+    <div class="card">
+      <div class="card-title">Most active repos (by commits)</div>
+      {% if data.activity.top_repos %}
+      <ul class="repo-list">
+        {% for repo in data.activity.top_repos %}
+        <li class="repo-item">
+          <span class="repo-name">
+            <a href="https://github.com/{{ repo.full_name }}" target="_blank">{{ repo.name }}</a>
+          </span>
+          <span class="repo-badge">{{ repo.commits }} commits</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p style="font-size:0.82rem;color:var(--muted);">No recent push activity found.</p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <div class="card-title">Top repos by stars</div>
+      {% if data.activity.star_repos %}
+      <ul class="repo-list">
+        {% for repo in data.activity.star_repos %}
+        <li>
+          <div class="repo-item">
+            <span class="repo-name">
+              <a href="https://github.com/{{ data.user.login }}/{{ repo.name }}" target="_blank">{{ repo.name }}</a>
+            </span>
+            <span class="repo-badge">★ {{ repo.stars }}</span>
+          </div>
+          {% if repo.description %}
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;padding-left:0;">{{ repo.description }}</div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p style="font-size:0.82rem;color:var(--muted);">No public repositories found.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Recent commits -->
+  {% if data.activity.recent_commits %}
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="card-title">Recent commits</div>
+    <ul class="commit-list">
+      {% for c in data.activity.recent_commits %}
+      <li class="commit-item">
+        <span class="commit-dot"></span>
+        <span class="commit-msg">{{ c.message }}</span>
+        <span class="commit-meta">{{ c.repo }}<br>{{ c.date }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <div class="generated">Generated {{ data.generated_at }}</div>
+  <div class="api-link"><a href="/api/user/{{ data.user.login }}">View as JSON ↗</a></div>
+
+</div>
+</body>
+</html>
