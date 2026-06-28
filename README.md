@@ -1,7 +1,6 @@
 # GitPulse
 
-GitHub activity summarizer. Enter any public GitHub username and get a clean dashboard showing commits, top repos, activity by day of week, and recent commit messages.
-
+GitHub activity summarizer — live at [gitpulse-vv2j.onrender.com](https://gitpulse-vv2j.onrender.com)
 ## Setup
 
 ```bash
@@ -54,6 +53,15 @@ GET /api/user/torvalds
   "generated_at": "2025-01-01 12:00 UTC"
 }
 ```
+
+## Screenshots
+
+### Home Page
+![GitPulse Home](screenshots/home.png)
+
+### Dashboard
+![GitPulse Dashboard](screenshots/dashboard.png)
+
 
 ## Notes
 
